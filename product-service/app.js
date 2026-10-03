@@ -2,10 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const productRoutes = require('./routes/productRoutes');
 
-const app = express();
+const app = express()
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({limit: '3mb'}));
 
 app.get('/health', (req, res) => {
     res.json({
@@ -14,12 +14,12 @@ app.get('/health', (req, res) => {
     });
 });
 
-app.use("/product", productRoutes);
+app.use("/products", productRoutes)
 
 app.use((req, res) => {
     res.status(404).json({
         message: "Endpoint tidak dikenal"
-    });
-});
+    })
+})
 
 module.exports = app;
