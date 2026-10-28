@@ -1,4 +1,3 @@
-
 FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y \
@@ -15,16 +14,13 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 COPY composer.json composer.lock ./
+COPY . .
 
 RUN composer install \
     --no-dev \
     --no-interaction \
     --prefer-dist \
     --optimize-autoloader
-
-COPY . .
-
-RUN php artisan package:discover --ansi
 
 EXPOSE 3003
 

@@ -50,6 +50,7 @@ services:
       DB_DATABASE: orderdb
       DB_USERNAME: appuser
       DB_PASSWORD: orderpassword
+      SESSION_DRIVER: file
     depends_on:
       order-db:
         condition: service_healthy
