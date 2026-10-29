@@ -1,27 +1,29 @@
+
 name: psdku
+
 services:
   product-service:
     build:
       context: ./product-service
       dockerfile: Dockerfile
     ports:
-      - 3000:3000
+      - "3000:3000"
     environment:
-      - DB_HOST=product-db
-      - DB_USER=appuser
-      - DB_PASSWORD=apppassword
-      - DB_NAME=productdb
+      DB_HOST: product-db
+      DB_USER: appuser
+      DB_PASSWORD: apppassword
+      DB_NAME: productdb
     depends_on:
       product-db:
         condition: service_healthy
-  
+
   product-db:
     image: mysql:8.0
     environment:
-      - MYSQL_DATABASE=productdb
-      - MYSQL_USER=appuser
-      - MYSQL_PASSWORD=apppassword
-      - MYSQL_ROOT_PASSWORD=rootpassword
+      MYSQL_DATABASE: productdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+      MYSQL_ROOT_PASSWORD: rootpassword
     volumes:
       - product-db-data:/var/lib/mysql
       - ./product-service/database/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -32,7 +34,6 @@ services:
       start_period: 30s
       timeout: 5s
 
-  
   order-service:
     build:
       context: ./order-service
@@ -51,6 +52,7 @@ services:
       DB_USERNAME: appuser
       DB_PASSWORD: orderpassword
       SESSION_DRIVER: file
+      PRODUCT_SERVICE_URL: http://product-service:3000
     depends_on:
       order-db:
         condition: service_healthy
@@ -70,7 +72,6 @@ services:
       retries: 5
       start_period: 30s
       timeout: 5s
-
 
 volumes:
   product-db-data:
