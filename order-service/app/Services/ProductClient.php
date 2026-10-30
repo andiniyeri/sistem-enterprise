@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
+use App\Exceptions\ExternalServiceException;
+use App\Exceptions\OrderConflictException;
 use Illuminate\Support\Facades\Http;
-use RuntimeException;
 use Throwable;
 
 class ProductClient
@@ -17,7 +18,7 @@ class ProductClient
                 ->timeout(config('services.product.timeout', 5))
                 ->get("/products/{$productId}");
         } catch (Throwable $exception) {
-            throw new RuntimeException(
+            throw new ExternalServiceException(
                 'Product Service tidak dapat dihubungi.',
                 0,
                 $exception
@@ -25,11 +26,13 @@ class ProductClient
         }
 
         if ($response->status() === 404) {
-            throw new RuntimeException('Produk tidak ditemukan.');
+            throw new OrderConflictException(
+                'Produk tidak ditemukan.'
+            );
         }
 
         if (!$response->successful()) {
-            throw new RuntimeException(
+            throw new ExternalServiceException(
                 'Product Service mengembalikan respons yang gagal.'
             );
         }
@@ -45,7 +48,7 @@ class ProductClient
                 $product['stock']
             )
         ) {
-            throw new RuntimeException(
+            throw new ExternalServiceException(
                 'Format respons Product Service tidak valid.'
             );
         }

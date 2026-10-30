@@ -41,4 +41,12 @@ return [
         'timeout' => 5,
     ],
 
+    'cart' => [
+        'base_url' => env(
+            'CART_SERVICE_URL',
+            'http://cart-service:3001'
+        ),
+        'timeout' => 5,
+    ],
+
 ];
