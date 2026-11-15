@@ -1,24 +1,33 @@
 // src/components/ProductCard.jsx
-// Satu kartu produk: kotak gambar, nama, harga, dan rating.
+// Satu kartu produk: foto, nama, harga, stok, dan rating.
 
 import { Link } from 'react-router-dom'
 import { formatRupiah } from '../utils/format'
 import StarRating from './StarRating'
 
+// Foto produk disimpan di folder public/images, dipilih berdasarkan id produk.
+const PHOTOS = {
+  1: '/images/keyboard.jpeg',
+  2: '/images/mouse.jpeg',
+  3: '/images/headset.jpeg',
+}
+
 export default function ProductCard({ product }) {
   const { id, name, price, stock, image, rating } = product
 
-  // Gambar contoh di database hanya 1 piksel (sangat pendek), jadi dianggap kosong.
-  const hasImage = typeof image === 'string' && image.length > 200
-  const src =
-    image?.startsWith('http') || image?.startsWith('data:')
-      ? image
-      : `data:image/png;base64,${image}`
+  // Urutan pilihan: foto lokal, lalu gambar dari database (kalau panjang/asli), lalu huruf awal.
+  let src = PHOTOS[id]
+  if (!src && typeof image === 'string' && image.length > 200) {
+    src =
+      image.startsWith('http') || image.startsWith('data:')
+        ? image
+        : `data:image/png;base64,${image}`
+  }
 
   return (
     <Link to={`/products/${id}`} className="card">
       <div className="card-image">
-        {hasImage ? (
+        {src ? (
           <img src={src} alt={name} />
         ) : (
           <span className="card-initial">{name.charAt(0)}</span>
