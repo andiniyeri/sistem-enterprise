@@ -1,4 +1,4 @@
-services:
+﻿services:
   # ==========================================
   # PRODUCT SERVICE
   # ==========================================
@@ -199,6 +199,24 @@ services:
       retries: 5
       start_period: 10s
       timeout: 5s
+    networks:
+      - microservices-network
+
+  # ==========================================
+  # API GATEWAY
+  # ==========================================
+  gateway:
+    build: ./gateway
+    ports:
+      - "8080:8080"
+    environment:
+      PRODUCT_URL: http://product-service:3000
+      CART_URL: http://cart-service:3001
+      REVIEW_URL: http://review-service:3002
+    depends_on:
+      - product-service
+      - cart-service
+      - review-service
     networks:
       - microservices-network
 

@@ -1,28 +1,17 @@
 // src/api/aggregate.js
-// Penggabungan data dari beberapa service dilakukan di sini, di dalam browser.
-// Tidak ada satu pun service yang tahu bentuk data gabungan ini, jadi frontend
-// yang harus memanggil satu per satu lalu menyatukannya sendiri.
+// Penggabungan daftar produk dan rating dilakukan gateway (endpoint /catalog).
+// Detail produk dan keranjang masih digabung di browser.
 
+import { request } from './http'
 import { getCart } from './cartApi'
-import { getProduct, getProducts } from './productApi'
+import { getProduct } from './productApi'
 import { getProductReviews } from './reviewApi'
 
 // Daftar produk beserta ringkasan rating.
-// 1 panggilan ke product-service, lalu 1 panggilan ke review-service untuk SETIAP produk.
+// Penggabungan sekarang dilakukan gateway: browser cukup memanggil /catalog satu kali.
 export async function getProductsWithRating() {
-  const products = await getProducts()
-
-  return Promise.all(
-    products.map(async (product) => {
-      try {
-        const { summary } = await getProductReviews(product.id)
-        return { ...product, rating: summary }
-      } catch {
-        // review-service bermasalah: produk tetap ditampilkan, hanya rating-nya kosong.
-        return { ...product, rating: null }
-      }
-    }),
-  )
+  const response = await request(import.meta.env.VITE_PRODUCT_URL, '/catalog')
+  return response.data
 }
 
 // Detail satu produk beserta review-nya. Produk wajib ada, review boleh gagal.
